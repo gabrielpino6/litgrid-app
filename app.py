@@ -4,6 +4,12 @@ Streamlit app for three-phase transmission line profile analysis.
 Run with:  streamlit run app.py
 """
 
+import sys
+from pathlib import Path
+
+# Ensure the app's directory is on the path (needed for Streamlit Cloud)
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 import numpy as np
 import pandas as pd
 from scipy import linalg
