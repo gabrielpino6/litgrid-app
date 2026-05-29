@@ -1,0 +1,102 @@
+% ──────────────────────────────────────────────────────────────────────────────
+%  Section 4 — Peak-to-peak modular spread of the phase currents
+% ──────────────────────────────────────────────────────────────────────────────
+
+\section{\texorpdfstring{Peak-to-peak modular spread $\Delta_{\max}(S,\ell)$}{Peak-to-peak modular spread Delta_max(S, ell)}}
+\label{sec:spread}
+
+The largest modular deviation between phases at the local terminal is
+the peak-to-peak spread of the three magnitudes
+\autoref{eq:Ik-mod}. With the line-only triplet
+$\bigl(\xi_{k}(\ell),\,\eta_{k}(\ell),\,\zeta_{k}(\ell)\bigr)$ defined in
+\autoref{eq:xi-eta-zeta},
+%
+\begin{equation}
+\label{eq:Deltamax}
+\boxed{\;
+\begin{aligned}
+\Delta_{\max}(S,\ell)
+\;=\;\;& \max_{k\in\{A,B,C\}}
+   \sqrt{\xi_{k}\,|S|^{2} + 2\,\Re[\eta_{k}]\,P + 2\,\Im[\eta_{k}]\,Q + \zeta_{k}} \\[2pt]
+{}\;-\;& \min_{k\in\{A,B,C\}}
+   \sqrt{\xi_{k}\,|S|^{2} + 2\,\Re[\eta_{k}]\,P + 2\,\Im[\eta_{k}]\,Q + \zeta_{k}}.
+\end{aligned}
+\;}
+\end{equation}
+%
+\noindent The two extrema are taken over the same scalar expression
+under the radical, evaluated with the per-phase constants
+$(\xi_{A},\eta_{A},\zeta_{A})$, $(\xi_{B},\eta_{B},\zeta_{B})$, and
+$(\xi_{C},\eta_{C},\zeta_{C})$. The whole right-hand side depends on
+$\ell$ through the nine line-only scalars and on the operating point
+through $(P,Q) = (\Re S,\Im S)$. No other quantity enters.
+
+A useful corollary expresses the pairwise modulus difference in closed
+form. Subtracting \autoref{eq:Ik-modsq-real} for two phases $i,j$
+removes the constant of $V_{s}$ and yields
+%
+\begin{equation}
+\label{eq:pairwise}
+\bigl|I_{i}\bigr|^{2}
+-
+\bigl|I_{j}\bigr|^{2}
+\;=\;
+\bigl(\xi_{i}-\xi_{j}\bigr)\,|S|^{2}
+\;+\;
+2\,\Re\!\bigl[\eta_{i}-\eta_{j}\bigr]\,P
+\;+\;
+2\,\Im\!\bigl[\eta_{i}-\eta_{j}\bigr]\,Q
+\;+\;
+\bigl(\zeta_{i}-\zeta_{j}\bigr).
+\end{equation}
+%
+\noindent which is a pure scalar polynomial of degree two in $(P,Q)$,
+linear in the differences of the line constants only. The
+peak-to-peak spread \autoref{eq:Deltamax} is then equivalently the
+largest absolute value of $\bigl||I_{i}|-|I_{j}|\bigr|$ over the three
+pairs $\{AB, BC, CA\}$.
+
+\subsection{Two operational corollaries}
+
+\paragraph{Light-loading asymptote.}
+For small $|S|$ the quadratic term in $|S|^{2}$ is dominated by the
+linear and constant parts, and \autoref{eq:Ik-mod} reduces to
+%
+\begin{equation}
+\label{eq:lightloading}
+\bigl|I_{k}(S,\ell)\bigr|
+\;\xrightarrow{|S|\to 0}\;
+\sqrt{\zeta_{k}(\ell)}
+\;+\;
+\frac{\Re[\eta_{k}(\ell)]\,P + \Im[\eta_{k}(\ell)]\,Q}{\sqrt{\zeta_{k}(\ell)}}
+\;+\;
+O(|S|^{2}).
+\end{equation}
+%
+\noindent At true no load ($S=0$) the per-phase magnitude is exactly
+$\sqrt{\zeta_{k}(\ell)}=|b_{k}(\ell)|$, the line-charging current of
+each phase. The peak-to-peak spread then collapses to
+$\max_{k}|b_{k}(\ell)|-\min_{k}|b_{k}(\ell)|$, which depends on the line
+only.
+
+\paragraph{Heavy-loading asymptote.}
+For $|S|$ large the quadratic term in $|S|^{2}$ dominates and
+%
+\begin{equation}
+\label{eq:heavyloading}
+\bigl|I_{k}(S,\ell)\bigr|
+\;\xrightarrow{|S|\to\infty}\;
+\sqrt{\xi_{k}(\ell)}\,|S|
+\;+\;
+\frac{\Re[\eta_{k}(\ell)]\,P + \Im[\eta_{k}(\ell)]\,Q}{\sqrt{\xi_{k}(\ell)}\,|S|}
+\;+\;
+O\!\bigl(|S|^{-3}\bigr).
+\end{equation}
+%
+\noindent The relative spread, that is the absolute spread divided by
+the average magnitude, then approaches the spread of
+$\sqrt{\xi_{k}(\ell)}$ across the three phases. Because
+$|a_{k}|=|p_{k}|/(V_{s}|\alpha|)$ is set by the moduli of the
+phase-projected $\matB^{-1}\vu$, the heavy-load relative unbalance is
+controlled purely by the asymmetry of $\vp(\ell)$ across the three
+phases.

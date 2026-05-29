@@ -1,0 +1,44 @@
+% ──────────────────────────────────────────────────────────────────────────────
+%  Section 2 — The sending current as an affine functional of S
+% ──────────────────────────────────────────────────────────────────────────────
+
+\section{\texorpdfstring{The phase current as an affine functional of $S$}{The phase current as an affine functional of S}}
+\label{sec:affine}
+
+Substituting \autoref{eq:W-recall} into the sending-current relation
+$\vI_{s} = \matB^{-1}(W^{*}\vu - V_{s}\,\matA\vu)$ and reading off the
+$k$-th component yields, after a straightforward algebraic
+rearrangement,
+%
+\begin{equation}
+\label{eq:Ik-affine}
+I_{k}(S,\ell) \;=\; a_{k}(\ell)\,S^{*} \;+\; b_{k}(\ell),
+\qquad k \in \{A,B,C\},
+\end{equation}
+%
+where the two complex coefficients depend on the line only:
+%
+\begin{equation}
+\label{eq:ak-bk}
+a_{k}(\ell) \;=\;
+   \frac{p_{k}(\ell)}{V_{s}\,\overline{\alpha(\ell)}},
+\qquad
+b_{k}(\ell) \;=\;
+   \frac{V_{s}\,\bigl[\,p_{k}(\ell)\,\overline{\beta(\ell)} \;-\;
+                          \overline{\alpha(\ell)}\,q_{k}(\ell)\,\bigr]}
+        {\overline{\alpha(\ell)}}.
+\end{equation}
+
+\noindent Each phase current is therefore an affine functional of the
+complex apparent power: $a_{k}(\ell)\in\mathbb{C}$ is the gain on the
+loading term $S^{*}$, and $b_{k}(\ell)\in\mathbb{C}$ is the no-load
+offset that the line delivers at $S=0$. Both coefficients are produced
+once per length from \autoref{eq:line-constants} and
+\autoref{eq:alpha-beta}, and the dependence on $S$ is fully linear.
+
+The affine form \autoref{eq:Ik-affine} is exact within the model
+assumptions of the parent document (symmetric local-bus voltage,
+balanced remote-bus magnitude, lumped end-to-end $\matM(\ell)$) and
+absorbs every detail of the non-circulant per-unit-length matrices
+into the six complex line constants
+$\{a_{A},a_{B},a_{C},b_{A},b_{B},b_{C}\}(\ell)$.

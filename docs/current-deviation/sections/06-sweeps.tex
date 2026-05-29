@@ -1,0 +1,103 @@
+% ──────────────────────────────────────────────────────────────────────────────
+%  Section 6 — Parametric sweeps of the peak-to-peak spread
+% ──────────────────────────────────────────────────────────────────────────────
+
+\section{Parametric sweeps of $\Delta_{\max}$}
+\label{sec:sweeps}
+
+\autoref{eq:Deltamax} is evaluated on two single-variable sweeps of the
+$\SI{110}{\kilo\volt}$ asymmetric configuration of
+\autoref{sec:example}. \autoref{fig:sweep-S} fixes the line length at
+$\ell=\SI{25}{\kilo\metre}$ and sweeps $|S|$ from no load up to
+$\SI{200}{\mega\volt\ampere}$ along the direction of the example
+operating point, that is $\arg(S)=\arg(80+\jj 10\,\si{\mega\volt\ampere})
+\approx 7.13\si{\degree}$. \autoref{fig:sweep-length} fixes the apparent
+power at the example value $S=80+\jj 10\,\si{\mega\volt\ampere}$ and
+sweeps the line length from $\SI{1}{\kilo\metre}$ up to
+$\SI{100}{\kilo\metre}$. The filled marker on each curve is the common
+anchor at $S=80+\jj 10\,\si{\mega\volt\ampere}$ and
+$\ell=\SI{25}{\kilo\metre}$.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width=0.95\linewidth,
+    height=7cm,
+    xlabel={$|S|$ \,[MVA] at $\arg S = \arg(80{+}\jj 10)$},
+    ylabel={$\Delta_{\max}$ \,[A]},
+    xmin=0, xmax=200,
+    ymin=0,
+    grid=both,
+    minor tick num=1,
+    tick label style={/pgf/number format/fixed},
+  ]
+    \addplot+[
+      no marks, line width=0.9pt, color=primary,
+    ] table[x=S_MVA, y=spread_A] {data/sweep_S.dat};
+
+    \addplot[only marks, mark=*, mark size=2.4pt, color=primary,
+             forget plot]
+      coordinates {(80.6226, 38.4665)};
+  \end{axis}
+\end{tikzpicture}
+\caption{Peak-to-peak modular spread $\Delta_{\max}$ at the local
+terminal versus apparent-power magnitude $|S|$, with the line length
+held at $\ell=\SI{25}{\kilo\metre}$ and the loading direction held at
+the operating power factor of the example. The filled marker is the
+anchor at $S=80+\jj 10\,\si{\mega\volt\ampere}$.}
+\label{fig:sweep-S}
+\end{figure}
+
+\autoref{fig:sweep-S} confirms the heavy-load asymptote of
+\autoref{eq:heavyloading}: the spread is linear in $|S|$ across the
+plotted range, with a slope set by the spread of $\sqrt{\xi_{k}(\ell)}$
+across the three phases. The line passes through the origin to within
+the no-load offset $\max_{k}|b_{k}|-\min_{k}|b_{k}|<\SI{0.05}{\ampere}$
+that becomes visible only at $|S|\lesssim\SI{0.5}{\mega\volt\ampere}$
+and is not separable from zero at the scale of the figure.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width=0.95\linewidth,
+    height=7cm,
+    xlabel={Line length $\ell$ \,[km]},
+    ylabel={$\Delta_{\max}$ \,[A]},
+    xmin=0, xmax=100,
+    ymin=38, ymax=39,
+    grid=both,
+    minor tick num=1,
+    tick label style={/pgf/number format/fixed},
+  ]
+    \addplot+[
+      no marks, line width=0.9pt, color=primary,
+    ] table[x=length_km, y=spread_A] {data/sweep_length.dat};
+
+    \addplot[only marks, mark=*, mark size=2.4pt, color=primary,
+             forget plot]
+      coordinates {(25, 38.4665)};
+  \end{axis}
+\end{tikzpicture}
+\caption{Peak-to-peak modular spread $\Delta_{\max}$ at the local
+terminal versus line length $\ell$, with the apparent power held at the
+example value $S=80+\jj 10\,\si{\mega\volt\ampere}$. The filled marker
+is the anchor at $\ell=\SI{25}{\kilo\metre}$.}
+\label{fig:sweep-length}
+\end{figure}
+
+\autoref{fig:sweep-length} shows that for fixed $S$ the spread is
+remarkably flat across the entire span of practical
+$\SI{110}{\kilo\volt}$ corridor lengths. The variation across
+$\ell\in[1,\,100]\,\si{\kilo\metre}$ is bounded by
+$\SI{0.2}{\ampere}$ around a base value of roughly
+$\SI{38.4}{\ampere}$, which is at the resolution edge of substation
+ammeters and consistent with the observation that, for fixed loading,
+the unbalance pattern is set by the asymmetry of the per-unit-length
+matrices and not by the length. The length enters $\Delta_{\max}$
+through the ABCD blocks of $\matM(\ell)=\ee^{\matF\ell}$, but for the
+geometry under study the resulting variation of
+$\sqrt{\xi_{k}(\ell)}$ across the three phases is essentially
+invariant in $\ell$; the asymptote of \autoref{eq:heavyloading} is
+attained almost immediately and stays there as the line is lengthened.

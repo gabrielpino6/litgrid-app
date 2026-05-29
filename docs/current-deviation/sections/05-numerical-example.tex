@@ -1,0 +1,118 @@
+% ──────────────────────────────────────────────────────────────────────────────
+%  Section 5 — Numerical example
+% ──────────────────────────────────────────────────────────────────────────────
+
+\section{\texorpdfstring{Numerical example: $\SI{110}{\kilo\volt}$ asymmetric single circuit}{Numerical example: 110 kV asymmetric single circuit}}
+\label{sec:example}
+
+The line of the parent worked example is reused. A single conductor per
+phase of outer diameter $\SI{17.1}{\milli\metre}$ and DC resistance
+$\SI{0.1897}{\ohm/\kilo\metre}$ is placed at
+$(x,y)_{A}=(-4,20)$, $(x,y)_{B}=(0,20)$ and
+$(x,y)_{C}=(+4,23)\,\si{\metre}$ above a perfectly conducting earth
+plane with one overhead ground wire of diameter
+$\SI{11.11}{\milli\metre}$ at $(0,25)\,\si{\metre}$. The frequency is
+$\SI{50}{\hertz}$ and the soil resistivity is
+$\SI{1000}{\ohm.\metre}$.
+
+\autoref{tab:line-constants-ex} reports the nine line-only scalars of
+\autoref{eq:xi-eta-zeta} for two representative lengths,
+$\ell=\SI{80}{\kilo\metre}$ and $\ell=\SI{200}{\kilo\metre}$, with the
+apparent power scaled so that $S$ enters \autoref{eq:Ik-modsq-real} in
+megavolt-amperes directly. The line-to-neutral magnitude is
+$V_{s}=110/\sqrt{3}\,\si{\kilo\volt}\approx\SI{63.509}{\kilo\volt}$.
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{c c r r r r}
+\toprule
+$\ell$ [km] & phase $k$ &
+$\xi_{k}$ [$\si{\ampere\squared/\mega\volt\ampere\squared}$] &
+$\Re\,\eta_{k}$ [$\si{\ampere\squared/\mega\volt\ampere}$] &
+$\Im\,\eta_{k}$ [$\si{\ampere\squared/\mega\volt\ampere}$] &
+$\zeta_{k}$ [$\si{\ampere\squared}$] \\
+\midrule
+\multirow{3}{*}{$80$}
+  & $A$ & $25.583$ & $-0.9093$ & $-0.8940$ & $0.0636$ \\
+  & $B$ & $30.616$ & $+1.1681$ & $+0.2119$ & $0.0460$ \\
+  & $C$ & $26.760$ & $-0.0704$ & $+0.6697$ & $0.0169$ \\
+\midrule
+\multirow{3}{*}{$200$}
+  & $A$ & $25.596$ & $-2.2767$ & $-2.2368$ & $0.3980$ \\
+  & $B$ & $30.609$ & $+2.9206$ & $+0.5325$ & $0.2879$ \\
+  & $C$ & $26.754$ & $-0.1737$ & $+1.6716$ & $0.1056$ \\
+\bottomrule
+\end{tabular}
+\caption{Line-only triplets $(\xi_{k},\eta_{k},\zeta_{k})$ for the
+$\SI{110}{\kilo\volt}$ example, with $S$ in $\si{\mega\volt\ampere}$.
+Units: $\xi$ in $\si{\ampere\squared/\mega\volt\ampere\squared}$,
+the real and imaginary parts of $\eta$ in
+$\si{\ampere\squared/\mega\volt\ampere}$,
+and $\zeta$ in $\si{\ampere\squared}$.}
+\label{tab:line-constants-ex}
+\end{table}
+
+The structural asymmetry between the three phases is visible directly
+in the table. The quadratic coefficient $\xi_{B}\approx
+\SI{30.6}{\ampere\squared/\mega\volt\ampere\squared}$ is roughly
+\SI{20}{\percent} larger than $\xi_{A}$ and $\xi_{C}$; phase $B$ also
+carries the largest positive $\Re\,\eta$ and the smallest $\Im\,\eta$,
+which combine to produce the largest current modulus at active loading
+and unity-leading reactive power. The no-load offsets
+$\sqrt{\zeta_{k}}$ are $0.25$, $0.21$ and $\SI{0.13}{\ampere}$ at
+$\SI{80}{\kilo\metre}$, growing to $0.63$, $0.54$ and
+$\SI{0.32}{\ampere}$ at $\SI{200}{\kilo\metre}$ because of the
+quadratic dependence of the line charging current on length.
+
+Evaluating \autoref{eq:Ik-mod} at $S=80+\jj 10\,\si{\mega\volt\ampere}$
+through the table gives $|I_{A}|=\SI{407.59}{\ampere}$,
+$|I_{B}|=\SI{446.31}{\ampere}$ and $|I_{C}|=\SI{417.06}{\ampere}$ at
+$\SI{80}{\kilo\metre}$, with peak-to-peak spread
+\begin{equation}
+\Delta_{\max}(80+\jj 10\,\si{\mega\volt\ampere},\,\SI{80}{\kilo\metre})
+\;=\;
+\SI{446.31}{\ampere} - \SI{407.59}{\ampere}
+\;\approx\;
+\SI{38.73}{\ampere},
+\end{equation}
+and analogously $\SI{39.19}{\ampere}$ at $\SI{200}{\kilo\metre}$, in
+exact agreement with the direct propagation of the boundary problem.
+The example confirms that \autoref{eq:Deltamax} is a faithful and
+operationally usable closed form for the peak-to-peak modular spread
+of the phase currents at the local terminal, as a function of the
+three-phase complex apparent power and the line length only.
+
+\autoref{tab:anchor-state} consolidates the complete per-phase state
+at the anchor $S=80+\jj 10\,\si{\mega\volt\ampere}$,
+$\ell=\SI{25}{\kilo\metre}$ that is referenced in the conclusion of
+\autoref{sec:conclusions}.
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{l r r r r}
+\toprule
+Phase & $|I_{k}|$ [A] & $\arg I_{k}$ [\si{\degree}] & $P_{k}$ [MW] & $Q_{k}$ [MVAr] \\
+\midrule
+$A$ & $407.71$ & $-3.77$    & $25.84$ & $1.70$ \\
+$B$ & $446.17$ & $-126.92$  & $28.13$ & $3.42$ \\
+$C$ & $417.07$ & $+109.38$  & $26.03$ & $4.88$ \\
+\midrule
+Sum / mean & mean $423.65$ & --- & $80.00$ & $10.00$ \\
+\bottomrule
+\end{tabular}
+\caption{Per-phase electrical state at the anchor
+$S=80+\jj 10\,\si{\mega\volt\ampere}$,
+$\ell=\SI{25}{\kilo\metre}$. The receiving-end line-to-neutral voltage
+is $V_{r}=\SI{61.08}{\kilo\volt}$ ($\SI{96.17}{\percent}$ of $V_{s}$)
+at a transmission angle of $\delta=-3.90\si{\degree}$. The peak-to-peak
+spread is $\Delta_{\max}=\SI{38.47}{\ampere}$ ($\SI{9.08}{\percent}$ of
+the mean), the positive-sequence current is
+$|I_{+}|=\SI{423.16}{\ampere}$, the negative-sequence current is
+$|I_{-}|=\SI{25.95}{\ampere}$, and the current unbalance factor is
+$\mathrm{IUF}=|I_{-}|/|I_{+}|=\SI{6.13}{\percent}$. Per-phase $P_{k}$
+and $Q_{k}$ are computed as $\Re\{V_{s}\,u_{k}\,I_{k}^{*}\}$ and
+$\Im\{V_{s}\,u_{k}\,I_{k}^{*}\}$.}
+\label{tab:anchor-state}
+\end{table}

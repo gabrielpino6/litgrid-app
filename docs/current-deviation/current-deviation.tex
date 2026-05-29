@@ -1,0 +1,64 @@
+\documentclass[12pt,a4paper]{article}
+
+% ------------ Shared configuration ------------
+\input{shared/report-config}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{adjustbox}
+\usepackage{booktabs}
+\usepackage{bm}
+\usepackage{siunitx}
+\sisetup{detect-all=true, group-separator={\,}}
+\usetikzlibrary{calc,positioning,arrows.meta,fit,backgrounds}
+\usepgfplotslibrary{groupplots}
+\usepgfplotslibrary{fillbetween}
+
+% ------------ Math shorthands for this document ------------
+\newcommand{\jj}{\mathrm{j}}
+\newcommand{\ee}{\mathrm{e}}
+\newcommand{\diff}{\mathrm{d}}
+\newcommand{\matA}{\bm{A}}
+\newcommand{\matB}{\bm{B}}
+\newcommand{\matD}{\bm{D}}
+\newcommand{\matF}{\bm{F}}
+\newcommand{\matM}{\bm{M}}
+\newcommand{\matZ}{\bm{Z}}
+\newcommand{\matY}{\bm{Y}}
+\newcommand{\matI}{\bm{I}}
+\newcommand{\vI}{\bm{I}}
+\newcommand{\vV}{\bm{V}}
+\newcommand{\vu}{\bm{u}}
+\newcommand{\vp}{\bm{p}}
+\newcommand{\vq}{\bm{q}}
+\renewcommand{\Re}{\operatorname{Re}}
+\renewcommand{\Im}{\operatorname{Im}}
+
+% ------------ Document-specific data ------------
+\newcommand{\project}{Situational Awareness of a Transmission Line \\ \textit{why we need V, I, P and Q, not the current alone}}
+\newcommand{\summary}{A Litgrid technical note. The state of a transmission line cannot be read from the current alone, not even on all three phases. Voltage, current, active and reactive power per phase, at both terminals, together describe what the line is actually doing.}
+\newcommand{\docformat}{Technical Note}
+\newcommand{\edition}{1}
+\newcommand{\editiondate}{\today}
+\newcommand{\docauthor}{Gabriel Pino}
+\newcommand{\reviewer}{Maxwell Menezes}
+
+% Version injected automatically by a build script — do not edit manually
+\IfFileExists{_version.tex}{\input{_version}}{}
+
+\begin{document}
+
+\EnlineCover
+\EnlineTableOfContents
+
+% ======================================================
+% Sections
+% ======================================================
+\input{sections/01-setup}
+\input{sections/02-affine-in-S}
+\input{sections/03-modulus-quadratic}
+\input{sections/04-spread}
+\input{sections/05-numerical-example}
+\input{sections/06-sweeps}
+\input{sections/07-conclusions}
+
+\end{document}

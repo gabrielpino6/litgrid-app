@@ -1,0 +1,82 @@
+% ──────────────────────────────────────────────────────────────────────────────
+%  Section 3 — Modulus of the phase current as a real quadratic in (P, Q)
+% ──────────────────────────────────────────────────────────────────────────────
+
+\section{\texorpdfstring{Modulus of the phase current as a quadratic form in $(P,Q)$}{Modulus of the phase current as a quadratic form in (P,Q)}}
+\label{sec:quadratic}
+
+Taking modulus squared of \autoref{eq:Ik-affine} and expanding,
+%
+\begin{equation}
+\label{eq:Ik-modsq-complex}
+\bigl|I_{k}(S,\ell)\bigr|^{2}
+\;=\;
+\bigl|a_{k}(\ell)\bigr|^{2}\,|S|^{2}
+\;+\;
+2\,\Re\!\bigl[\,a_{k}(\ell)\,\overline{b_{k}(\ell)}\,S^{*}\,\bigr]
+\;+\;
+\bigl|b_{k}(\ell)\bigr|^{2}.
+\end{equation}
+%
+Splitting $S = P + \jj Q$ and using
+$\Re(zS^{*}) = \Re(z)\,P + \Im(z)\,Q$ gives the equivalent real-valued
+form
+%
+\begin{equation}
+\label{eq:Ik-modsq-real}
+\bigl|I_{k}(P,Q,\ell)\bigr|^{2}
+\;=\;
+\xi_{k}(\ell)\,(P^{2}+Q^{2})
+\;+\;
+2\,\Re\!\bigl[\eta_{k}(\ell)\bigr]\,P
+\;+\;
+2\,\Im\!\bigl[\eta_{k}(\ell)\bigr]\,Q
+\;+\;
+\zeta_{k}(\ell),
+\end{equation}
+%
+\noindent where the three line-only scalars per phase are
+%
+\begin{equation}
+\label{eq:xi-eta-zeta}
+\xi_{k}(\ell) \;=\; \bigl|a_{k}(\ell)\bigr|^{2},
+\qquad
+\eta_{k}(\ell) \;=\; a_{k}(\ell)\,\overline{b_{k}(\ell)},
+\qquad
+\zeta_{k}(\ell) \;=\; \bigl|b_{k}(\ell)\bigr|^{2}.
+\end{equation}
+%
+Among these, $\xi_{k}$ and $\zeta_{k}$ are non-negative reals and
+$\eta_{k}$ is complex. They are derived once from \autoref{eq:ak-bk}
+for a given length.
+
+\autoref{eq:Ik-modsq-real} states that the modulus squared of every
+phase current is a quadratic polynomial in the active and reactive
+power, with no cross product $PQ$, with the coefficient of
+$(P^{2}+Q^{2})$ equal across the three phases up to $\xi_{k}$, and with
+the linear part fully captured by the two real coordinates of the
+complex constant $\eta_{k}$. The asymmetry of the line lives entirely
+in the spread of $\{\xi_{k},\,\eta_{k},\,\zeta_{k}\}$ across
+$k\in\{A,B,C\}$.
+
+The phase current modulus itself is the square root:
+%
+\begin{equation}
+\label{eq:Ik-mod}
+\bigl|I_{k}(P,Q,\ell)\bigr|
+\;=\;
+\sqrt{\,
+\xi_{k}(\ell)\,(P^{2}+Q^{2})
+\;+\;
+2\,\Re[\eta_{k}(\ell)]\,P
+\;+\;
+2\,\Im[\eta_{k}(\ell)]\,Q
+\;+\;
+\zeta_{k}(\ell)\,}.
+\end{equation}
+%
+For fixed $\ell$ the level sets of \autoref{eq:Ik-mod} in the $(P,Q)$
+plane are circles centred at
+$\bigl(-\Re[\eta_{k}]/\xi_{k},\,-\Im[\eta_{k}]/\xi_{k}\bigr)$;
+the displacement of those three centres is one geometric reading of the
+phase-current unbalance.

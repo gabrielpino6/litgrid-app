@@ -1,0 +1,713 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{siunitx}
+
+\newcommand{\jj}{\mathrm{j}}
+\newcommand{\ee}{\mathrm{e}}
+\newcommand{\diff}{\mathrm{d}}
+\newcommand{\matZ}{\bm{Z}}
+\newcommand{\matY}{\bm{Y}}
+\newcommand{\matR}{\bm{R}}
+\newcommand{\matL}{\bm{L}}
+\newcommand{\matC}{\bm{C}}
+\newcommand{\matG}{\bm{G}}
+\newcommand{\matA}{\bm{A}}
+\newcommand{\matB}{\bm{B}}
+\newcommand{\matD}{\bm{D}}
+\newcommand{\matM}{\bm{M}}
+\newcommand{\matF}{\bm{F}}
+\newcommand{\matP}{\bm{P}}
+\newcommand{\matT}{\bm{T}}
+\newcommand{\matI}{\bm{I}}
+\newcommand{\vV}{\bm{V}}
+\newcommand{\vI}{\bm{I}}
+\newcommand{\vQ}{\bm{Q}}
+\newcommand{\vphi}{\bm{\phi}}
+\newcommand{\vu}{\bm{u}}
+\newcommand{\vp}{\bm{p}}
+\newcommand{\vq}{\bm{q}}
+\newcommand{\zeroM}{\bm{0}}
+\newcommand{\Lint}{L_{\mathrm{int}}}
+\newcommand{\Lself}[1]{L^{\mathrm{geom}}_{\mathrm{self},#1}}
+\newcommand{\Lmut}[1]{L^{\mathrm{geom}}_{\mathrm{mut},#1}}
+\renewcommand{\Re}{\operatorname{Re}}
+
+\title{Distributed-Parameter Modelling of a Three-Phase\\
+Overhead Transmission Line and Phase-Current\\
+Unbalance as a Function of Length and Apparent Power}
+\author{Litgrid}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This note documents the analytical model used by the Litgrid application to
+compute voltage and current profiles along a three-phase overhead transmission
+line. Per-unit-length matrices \(\matR,\matL,\matC,\matG\) are obtained from
+tower geometry by decomposing each conductor's self impedance into an internal
+(skin) contribution and an external (geometric) contribution, building a
+fully-coupled cable-to-cable matrix, reducing it first across the bundled
+conductors of a phase, and finally Kron-eliminating the overhead ground wires.
+The line is then solved as a distributed-parameter system using the matrix
+exponential of its state-space generator. A two-point boundary problem is
+posed with a symmetrical positive-sequence voltage at one terminal and a
+specified three-phase complex power \(S=P+\jj Q\) at the same (or opposite)
+terminal. The natural asymmetry of the per-unit-length matrices for
+non-transposed geometries drives the phase-current unbalance, which is
+quantified and presented as a function of length and apparent power. A
+complete worked example for a \SI{110}{\kilo\volt} single-circuit line closes
+the document.
+\end{abstract}
+
+\section{Notation and Conventions}
+
+Bold symbols denote vectors and matrices in the conductor- or phase-domain.
+Phasors are RMS, with the cosine reference. The phase rotation operator is
+\(a = \ee^{\jj 2\pi/3}\) and the positive-sequence unit vector is
+\begin{equation}
+\vu \;=\; \begin{bmatrix} 1 \\ a^{2} \\ a \end{bmatrix}.
+\label{eq:u}
+\end{equation}
+Angular frequency \(\omega=2\pi f\). Distances along the line are in
+kilometres, so \(\matR\) is in \si{\ohm/\kilo\metre}, \(\matL\) in
+\si{\milli\henry/\kilo\metre}, \(\matC\) in \si{\nano\farad/\kilo\metre}, and
+\(\matG\) in \si{\micro\siemens/\kilo\metre}.
+
+\section{Per-Unit-Length Parameters of the Coupled Conductor System}
+
+The tower carries \(N\) conductors in total, comprising the bundled
+sub-conductors of \(n_p=3\) phase bundles plus \(n_g\ge 0\) overhead ground
+wires. Each conductor \(i\) is described by its DC resistance
+\(r_{\mathrm{dc},i}\) at the operating temperature, its outer radius \(r_i\),
+and its Cartesian position \((x_i,y_i)\) with \(y_i>0\) above the perfectly
+conducting earth plane.
+
+\subsection{Self and Mutual Inductances}
+
+Following the classical decomposition of the magnetic flux linking a thin
+round non-magnetic conductor at the power frequency, the self inductance per
+unit length of conductor \(i\) is the sum of two contributions:
+
+\paragraph{Internal inductance.} The flux that resides \emph{inside} the
+conductor (uniform-current low-frequency approximation):
+\begin{equation}
+\Lint \;=\; \frac{\mu_{0}}{8\pi}\quad[\si{\henry/\metre}].
+\label{eq:Lint}
+\end{equation}
+This is the same for every solid round conductor and does not depend on its
+radius.
+
+\paragraph{Geometric (external) self inductance.} The flux that links the
+conductor through the region between its surface (radius \(r_i\)) and the
+earth-return reference distance \(D_e\) below the soil:
+\begin{equation}
+\Lself{i}\;=\;\frac{\mu_{0}}{2\pi}\,\ln\!\frac{D_{e}}{r_{i}}
+\quad[\si{\henry/\metre}].
+\label{eq:Lselfgeom}
+\end{equation}
+
+\paragraph{Geometric mutual inductance.} Between two distinct conductors
+\(i\) and \(j\) separated by the (real) distance
+\(d_{ij}=\sqrt{(x_{i}-x_{j})^{2}+(y_{i}-y_{j})^{2}}\):
+\begin{equation}
+\Lmut{ij}\;=\;\frac{\mu_{0}}{2\pi}\,\ln\!\frac{D_{e}}{d_{ij}}
+\quad[\si{\henry/\metre}].
+\label{eq:Lmut}
+\end{equation}
+
+The earth-return depth and the earth-return resistance follow Carson's
+low-frequency homogeneous-soil approximation:
+\begin{equation}
+D_{e} \;=\; 658.5\,\sqrt{\rho/f}\;\;[\si{\metre}],\qquad
+R_{e} \;=\; \frac{\omega\mu_{0}}{8\pi}\;\;[\si{\ohm/\metre}],
+\label{eq:CarsonDeRe}
+\end{equation}
+where \(\rho\) is the soil resistivity in \si{\ohm.\metre}.
+
+\subsection{Series Impedance Matrix of the Coupled System}
+
+Assembling \eqref{eq:Lint}--\eqref{eq:Lmut} into the per-unit-length series
+impedance gives, in \si{\ohm/\kilo\metre},
+\begin{align}
+Z_{ii} &= \bigl(r_{\mathrm{dc},i} + R_{e}\bigr)
+   \;+\; \jj\,\omega\,\bigl(\Lint + \Lself{i}\bigr)\cdot 10^{3}, \label{eq:Zii}\\[3pt]
+Z_{ij} &= R_{e}
+   \;+\; \jj\,\omega\,\Lmut{ij}\cdot 10^{3},\qquad i\ne j. \label{eq:Zij}
+\end{align}
+The \(N\times N\) symmetric matrix \(\matZ_{\mathrm{full}}\) collects every
+cable-to-cable coupling (phase sub-conductors and ground wires alike).
+
+\subsection{Potential Coefficient Matrix of the Coupled System}
+
+With the earth treated as a perfect equipotential, image-charge theory yields
+the \(N\times N\) potential-coefficient matrix \(\matP_{\mathrm{full}}\):
+\begin{align}
+P_{ii} &= \frac{1}{2\pi\varepsilon_{0}}\,
+          \ln\!\frac{2y_{i}}{r_{i}}, \label{eq:Pii}\\[3pt]
+P_{ij} &= \frac{1}{2\pi\varepsilon_{0}}\,
+          \ln\!\frac{D_{ij}}{d_{ij}},\qquad i\ne j, \label{eq:Pij}
+\end{align}
+where \(D_{ij}=\sqrt{(x_{i}-x_{j})^{2}+(y_{i}+y_{j})^{2}}\) is the distance
+from conductor \(i\) to the \emph{image} of conductor \(j\) below the soil.
+\(\matP_{\mathrm{full}}\) relates charge to voltage:
+\(\vV_{\mathrm{full}}=\matP_{\mathrm{full}}\,\vQ_{\mathrm{full}}\).
+
+\section{Reduction to the Phase Domain}
+
+The \(N\)-conductor coupled matrices contain information that is not directly
+useful for line operation: sub-conductors of a bundle are paralleled, and the
+overhead ground wires are short-circuited to earth. Two successive linear
+reductions eliminate these degrees of freedom.
+
+\subsection{Bundle Reduction}
+
+Let the \(N\) physical conductors be partitioned into \(n_p\) phase bundles
+plus \(n_g\) ground wires (each ground wire is its own ``bundle of size one'').
+Introduce the connection matrix \(\matT\in\{0,1\}^{N\times(n_{p}+n_{g})}\)
+with \(T_{ik}=1\) if conductor \(i\) belongs to bundle \(k\), zero otherwise.
+The two physical constraints of a bundle are
+\begin{equation}
+\vV_{\mathrm{full}}=\matT\,\vV_{b},\qquad
+\vI_{b}=\matT^{\top}\vI_{\mathrm{full}},\qquad
+\vQ_{b}=\matT^{\top}\vQ_{\mathrm{full}},
+\label{eq:bundle-T}
+\end{equation}
+expressing equality of potential within a bundle and Kirchhoff summation of
+the per-conductor currents and charges.
+
+Substituting in \(\vV=\matZ_{\mathrm{full}}\vI\) and
+\(\vV=\matP_{\mathrm{full}}\vQ\) and using
+\(\matY_{\mathrm{full}}=\matZ_{\mathrm{full}}^{-1}\) yields the bundle-reduced
+matrices
+\begin{align}
+\matZ_{b} &= \bigl(\matT^{\top}\matZ_{\mathrm{full}}^{-1}\,\matT\bigr)^{-1},
+\label{eq:bundle-Z}\\[3pt]
+\matP_{b} &= \bigl(\matT^{\top}\matP_{\mathrm{full}}^{-1}\,\matT\bigr)^{-1}.
+\label{eq:bundle-P}
+\end{align}
+Both have size \((n_{p}+n_{g})\times(n_{p}+n_{g})\). When every bundle is a
+single conductor, \(\matT=\matI_{N}\) and the bundle step is the identity.
+
+\subsection{Kron Elimination of the Ground Wires}
+
+Partition the bundle-reduced matrices into a phase block (subscript \(p\),
+size \(n_{p}=3\)) and a ground-wire block (subscript \(g\), size \(n_{g}\)):
+\begin{equation}
+\matZ_{b}=\begin{bmatrix}\matZ_{pp}&\matZ_{pg}\\[2pt]\matZ_{gp}&\matZ_{gg}\end{bmatrix},\qquad
+\matP_{b}=\begin{bmatrix}\matP_{pp}&\matP_{pg}\\[2pt]\matP_{gp}&\matP_{gg}\end{bmatrix}.
+\end{equation}
+Imposing \(\vV_{g}=\bm{0}\) on the ground wires (perfectly bonded to earth)
+removes the ground-block degrees of freedom and gives the \(3\times 3\)
+phase-domain matrices
+\begin{align}
+\matZ_{\mathrm{ph}} &= \matZ_{pp} - \matZ_{pg}\,\matZ_{gg}^{-1}\,\matZ_{gp},
+\label{eq:Kron-Z}\\[2pt]
+\matP_{\mathrm{ph}} &= \matP_{pp} - \matP_{pg}\,\matP_{gg}^{-1}\,\matP_{gp}.
+\label{eq:Kron-P}
+\end{align}
+The phase-domain per-unit-length matrices follow as
+\begin{equation}
+\matR = \Re\{\matZ_{\mathrm{ph}}\},\quad
+\matL = \tfrac{1}{\omega}\,\mathrm{Im}\{\matZ_{\mathrm{ph}}\}\cdot 10^{3},\quad
+\matC = \matP_{\mathrm{ph}}^{-1}\cdot 10^{12},\quad
+\matG = g_{0}\,\matI_{3},
+\label{eq:RLCG}
+\end{equation}
+with \(g_{0}\) a small leakage conductance modelling corona/insulator losses
+(default \SI{2e-3}{\micro\siemens/\kilo\metre}). For non-transposed geometries
+\(\matZ_{\mathrm{ph}}\) and \(\matP_{\mathrm{ph}}\) are symmetric but
+\emph{not} circulant; their unequal entries are the structural origin of
+every unbalance phenomenon that follows.
+
+\section{Distributed-Parameter Line Equations}
+
+Let \(\vV(s)\) and \(\vI(s)\) denote the phasor voltage and current vectors
+at distance \(s\in[0,\ell]\) from the local terminal. Form the per-unit-length
+series impedance and shunt admittance
+\begin{equation}
+\matZ \;=\; \matR + \jj\omega\,\matL,\qquad
+\matY \;=\; \matG + \jj\omega\,\matC.
+\end{equation}
+The Telegrapher's equations in the frequency domain are
+\begin{equation}
+\frac{\diff}{\diff s}\!
+\begin{bmatrix}\vV\\[2pt]\vI\end{bmatrix}
+\;=\;
+\underbrace{\begin{bmatrix}\zeroM & -\matZ \\[2pt] -\matY & \zeroM\end{bmatrix}}_{\matF}
+\begin{bmatrix}\vV\\[2pt]\vI\end{bmatrix}.
+\label{eq:state-space}
+\end{equation}
+The state vector at any distance follows from the matrix exponential
+\begin{equation}
+\vphi(s)\;\equiv\;\begin{bmatrix}\vV(s)\\[2pt]\vI(s)\end{bmatrix}
+\;=\;\ee^{\matF s}\,\vphi(0).
+\label{eq:propagator}
+\end{equation}
+The end-to-end ABCD transfer is the \(6\times 6\) matrix
+\(\matM=\ee^{\matF\ell}\), partitioned as
+\begin{equation}
+\matM=\begin{bmatrix}\matA&\matB\\\matA'&\matD\end{bmatrix},\qquad
+\begin{bmatrix}\vV_{r}\\[2pt]\vI_{r}\end{bmatrix}
+=\matM\begin{bmatrix}\vV_{s}\\[2pt]\vI_{s}\end{bmatrix},
+\label{eq:ABCD}
+\end{equation}
+with subscripts \(s\) and \(r\) denoting the sending end (\(s=0\)) and the
+receiving end (\(s=\ell\)).
+
+\section{Boundary Conditions: Symmetric Voltage and Specified \(S\)}
+
+Two physical constraints close the boundary problem:
+
+\begin{enumerate}
+\item \textbf{Balanced symmetric positive-sequence voltage at the local
+terminal.} The local bus is the angular reference and is held at the nominal
+line-to-neutral magnitude \(V_{s}=V_{LL}/\sqrt{3}\):
+\begin{equation}
+\vV_{s}\;=\;V_{s}\,\vu.
+\label{eq:bc-V}
+\end{equation}
+
+\item \textbf{Specified three-phase complex power at the local terminal.}
+\begin{equation}
+S\;=\;P+\jj Q\;=\;\vV_{s}^{\!\top}\,\vI_{s}^{*}.
+\label{eq:bc-S}
+\end{equation}
+(An entirely symmetric formulation applies if the constraint is given at the
+remote terminal: swap \(s\leftrightarrow r\), invert \(\matM\), and proceed
+identically.)
+\end{enumerate}
+
+The remote bus is assumed sufficiently stiff to remain balanced in magnitude
+and angle, so
+\begin{equation}
+\vV_{r}\;=\;V_{r}\,\ee^{\jj\delta}\,\vu,
+\label{eq:Vr-ansatz}
+\end{equation}
+where \(V_{r}\) and \(\delta\) are two unknown real scalars. Define the
+single complex unknown
+\begin{equation}
+\boxed{\;W\;\equiv\;V_{r}\,\ee^{-\jj\delta}\;\;\Longleftrightarrow\;\;V_{r}=|W|,\;\;\delta=-\arg(W),\;}
+\label{eq:W-def}
+\end{equation}
+so that \(V_{r}\,\ee^{\jj\delta}=W^{*}\).
+
+\section{Closed-Form Solution for \(W\)}
+
+Solving the upper block of \eqref{eq:ABCD} for \(\vI_{s}\) and substituting
+\eqref{eq:bc-V}--\eqref{eq:Vr-ansatz} gives
+\begin{equation}
+\vI_{s}\;=\;\matB^{-1}\bigl(\vV_{r}-\matA\,\vV_{s}\bigr)
+\;=\;\matB^{-1}\bigl(W^{*}\vu - V_{s}\,\matA\,\vu\bigr).
+\label{eq:Is-from-bc}
+\end{equation}
+Plugging \eqref{eq:Is-from-bc} into \eqref{eq:bc-S} yields a single scalar
+complex equation linear in \(W\). Expanding and collecting terms,
+\begin{equation}
+S\;=\;V_{s}\,W\,\underbrace{\vu\cdot\overline{\matB^{-1}\vu}}_{\alpha}
+\;-\;V_{s}^{2}\,\underbrace{\vu\cdot\overline{\matB^{-1}\matA\,\vu}}_{\beta},
+\label{eq:S-linear-in-W}
+\end{equation}
+where the dot products use ordinary (non-Hermitian) component sums and the
+overline denotes complex conjugation. Both \(\alpha,\beta\in\mathbb{C}\) depend
+only on the line (through \(\matA\) and \(\matB\)), so
+\begin{equation}
+\boxed{\;
+W\;=\;\frac{S\;+\;V_{s}^{2}\,\beta}{V_{s}\,\alpha},
+\qquad V_{r}=|W|,\quad \delta=-\arg(W).
+\;}
+\label{eq:W-closed-form}
+\end{equation}
+Once \(W\) is known, \eqref{eq:Is-from-bc} delivers \(\vI_{s}\); the receiving-end voltage and current follow from \eqref{eq:Vr-ansatz} and \eqref{eq:ABCD}.
+
+\section{Analytical Form of the Phase-Current Magnitudes}
+\label{sec:analytical-Ik}
+
+Substituting \(\vV_{s}=V_{s}\vu\) and \(\vV_{r}=W^{*}\vu\) in
+\eqref{eq:Is-from-bc} and extracting the \(k\)-th component yields a
+remarkably compact expression. Introduce the two complex 3-vectors
+\begin{equation}
+\vp \;:=\; \matB^{-1}\vu,\qquad
+\vq \;:=\; \matB^{-1}\matA\,\vu,
+\label{eq:pq-def}
+\end{equation}
+both of which depend on the line geometry only (through
+\(\matM=\ee^{\matF\ell}\)) and are independent of \(W\) and \(S\). Then
+\begin{equation}
+I_{k} \;=\; W^{*}\,p_{k} \;-\; V_{s}\,q_{k},\qquad k\in\{A,B,C\}.
+\label{eq:Ik-linear-W}
+\end{equation}
+
+\subsection{Closed Form for \texorpdfstring{\(|I_{k}|\)}{|Ik|}}
+
+Taking modulus squared of \eqref{eq:Ik-linear-W} and using
+\(W=V_{r}\ee^{-\jj\delta}\),
+\begin{equation}
+|I_{k}|^{2}
+\;=\; V_{r}^{2}\,|p_{k}|^{2}
+\;+\; V_{s}^{2}\,|q_{k}|^{2}
+\;-\; 2\,V_{s} V_{r}\,|p_{k}|\,|q_{k}|\,\cos\!\bigl(\delta + \psi_{k}\bigr),
+\label{eq:Ik-cosrule}
+\end{equation}
+where the \(\psi_{k}\) are line-only phase angles
+\begin{equation}
+\psi_{k} \;:=\; \arg(p_{k}) - \arg(q_{k}),\qquad k\in\{A,B,C\}.
+\label{eq:psi-def}
+\end{equation}
+Equation \eqref{eq:Ik-cosrule} is the law of cosines: each \(|I_{k}|\) is the
+length of the third side of a triangle with sides \(V_{r}|p_{k}|\) and
+\(V_{s}|q_{k}|\) enclosing the angle \((\delta+\psi_{k})\).
+
+\subsection{Largest Modular Deviation Between Phases}
+
+The peak-to-peak spread of the three phase magnitudes is, in closed form,
+\begin{equation}
+\boxed{\;
+\Delta_{\max}(W) \;=\;
+\max_{k}\!\sqrt{\,V_{r}^{2}|p_{k}|^{2}+V_{s}^{2}|q_{k}|^{2}-2V_{s}V_{r}|p_{k}||q_{k}|\cos(\delta+\psi_{k})\,}
+\;-\;\min_{k}\!\sqrt{\,(\text{same})\,}.\;}
+\label{eq:Deltamax}
+\end{equation}
+Equivalently, every pairwise modulus difference reads
+\begin{equation}
+|I_{i}|^{2}-|I_{j}|^{2}
+\;=\;V_{r}^{2}\bigl(|p_{i}|^{2}-|p_{j}|^{2}\bigr)
+\;+\;V_{s}^{2}\bigl(|q_{i}|^{2}-|q_{j}|^{2}\bigr)
+\;-\;2V_{s}V_{r}\bigl[|p_{i}||q_{i}|\cos(\delta+\psi_{i})-|p_{j}||q_{j}|\cos(\delta+\psi_{j})\bigr],
+\label{eq:pairwise-diff}
+\end{equation}
+which exposes the three sources of asymmetry:
+\begin{itemize}
+\item the spread of the moduli \(|p_{k}|\), weighted by \(V_{r}^{2}\)
+(receiving-side, shunt-driven asymmetry);
+\item the spread of the moduli \(|q_{k}|\), weighted by \(V_{s}^{2}\)
+(sending-side, series-driven asymmetry);
+\item a cross term modulated by \(\cos(\delta+\psi_{k})\), which is the only
+piece that depends on the transmission angle \(\delta\) and hence is the
+only piece sensitive to the loading direction.
+\end{itemize}
+The relative deviation reported by the application
+(eq.~\ref{eq:devs}) follows by normalising \eqref{eq:Ik-cosrule} by the mean
+of the three magnitudes; the maximum percentage deviation is therefore an
+explicit function of \(W\) alone, given the six line constants
+\(\{|p_{k}|,|q_{k}|,\psi_{k}\}_{k\in\{A,B,C\}}\).
+
+\section{Voltage and Current Profile Along the Line}
+
+With the initial state \(\vphi(0)=[\vV_{s};\,\vI_{s}]\) determined, the entire
+profile is recovered from \eqref{eq:propagator}:
+\begin{equation}
+\vphi(s_{k})\;=\;\ee^{\matF s_{k}}\,\vphi(0),
+\qquad s_{k}\in\{0,\Delta s,\dots,\ell\}.
+\end{equation}
+Each phase voltage and phase current is plotted as a function of \(s\). The
+receiving-end power is recomputed by direct dot product
+\(S_{r}=\vV_{r}^{\!\top}\vI_{r}^{*}\), and the total active loss is
+\(P_{\mathrm{loss}}=P-\Re\{S_{r}\}\).
+
+\section{Quantifying Phase-Current Unbalance}
+
+\subsection{Per-Phase Magnitude and Angular-Spacing Deviations}
+
+At a chosen terminal, define magnitudes \(|I_{k}|\) and angles
+\(\theta_{k}=\arg(I_{k})\) for \(k\in\{A,B,C\}\), the mean magnitude
+\(\overline{|I|}=\tfrac{1}{3}(|I_{A}|+|I_{B}|+|I_{C}|)\), and the three signed
+inter-phase angular spacings wrapped to \((-\pi,\pi]\):
+\begin{equation}
+s_{AB}=\mathrm{wrap}(\theta_{B}-\theta_{A}),\;
+s_{BC}=\mathrm{wrap}(\theta_{C}-\theta_{B}),\;
+s_{CA}=\mathrm{wrap}(\theta_{A}-\theta_{C}),
+\end{equation}
+with mean absolute spacing
+\(\overline{|s|}=\tfrac{1}{3}(|s_{AB}|+|s_{BC}|+|s_{CA}|)\).
+The per-phase deviations reported are
+\begin{equation}
+\Delta_{\mathrm{mag},k}[\%]=\frac{|I_{k}|-\overline{|I|}}{\overline{|I|}}\cdot 100,\qquad
+\Delta_{\mathrm{ang},k}[\si{\degree}]=|s_{k}|-\overline{|s|}.
+\label{eq:devs}
+\end{equation}
+
+\subsection{Spatial Variation Along the Line}
+
+Because the per-unit-length matrices are non-circulant, each phase current
+magnitude is not constant along \(s\):
+\begin{equation}
+\eta_{k}[\%]\;=\;\frac{\max_{s}|I_{k}(s)|-\min_{s}|I_{k}(s)|}{\min_{s}|I_{k}(s)|}\cdot 100,
+\quad k\in\{A,B,C\}.
+\label{eq:eta}
+\end{equation}
+
+\subsection{Relation to the Standard Current Unbalance Factor}
+
+For comparison with international standards, the symmetrical-component decomposition
+\begin{equation}
+\begin{bmatrix}I_{0}\\I_{+}\\I_{-}\end{bmatrix}=\tfrac{1}{3}
+\begin{bmatrix}1&1&1\\1&a&a^{2}\\1&a^{2}&a\end{bmatrix}
+\begin{bmatrix}I_{A}\\I_{B}\\I_{C}\end{bmatrix}
+\end{equation}
+yields the current unbalance factor
+\begin{equation}
+\mathrm{IUF}\;=\;\frac{|I_{-}|}{|I_{+}|}\cdot 100\;[\%].
+\label{eq:IUF}
+\end{equation}
+
+\section{Unbalance as a Function of Length and Apparent Power}
+
+Equations \eqref{eq:W-closed-form}--\eqref{eq:Is-from-bc} make the dependence
+of the solution on \(\ell\) and \(S\) explicit. The line-dependent quantities
+\(\matA(\ell)\) and \(\matB(\ell)\) come exclusively from
+\(\matM=\ee^{\matF\ell}\), so:
+\begin{itemize}
+\item In the electrically short limit \(\matA\to\matI_{3}\) and
+\(\matB\to\ell\,\matZ\), so the sending current reduces to
+\(\vI_{s}\approx(\ell\,\matZ)^{-1}(W^{*}\vu - V_{s}\vu)\): the dominant
+asymmetry is that of \(\matZ\) itself, scaled by \(1/\ell\).
+\item As \(\ell\) grows the shunt admittance contributes through
+\(\matB^{-1}\matA\); the asymmetry inherited from the non-circulant geometry
+propagates into both \(\alpha\) and \(\beta\).
+\item For fixed line geometry, \(S=P+\jj Q\) sets the absolute magnitude of
+\(\vI_{s}\) but only weakly modifies the relative unbalance
+\eqref{eq:devs}--\eqref{eq:eta}, because the constant capacitive term
+\(V_{s}^{2}\beta\) becomes a smaller fraction of the loading term as \(|S|\)
+grows. Light loading therefore typically produces a larger percentage
+unbalance than heavy loading.
+\end{itemize}
+The Litgrid application sweeps \((\ell,S)\) by re-evaluating
+\eqref{eq:W-closed-form}, \eqref{eq:Is-from-bc} and
+\eqref{eq:devs}--\eqref{eq:eta} for each pair.
+
+%========================================================================
+\section{Worked Example: \texorpdfstring{\SI{110}{\kilo\volt}}{110 kV} Single-Circuit Line}
+%========================================================================
+
+\subsection{Inputs}
+
+A horizontal-vertical asymmetric configuration with one conductor per phase
+and one overhead ground wire.
+\begin{itemize}
+\item Nominal line-to-line voltage \(V_{LL}=\SI{110}{\kilo\volt}\), so the
+local line-to-neutral magnitude is \(V_{s}=110/\sqrt{3}\approx
+\SI{63509.1}{\volt}\).
+\item Three-phase complex power injected at the local terminal:
+\(S=P+\jj Q=80+\jj 10\;\si{\mega\volt\ampere}\).
+\item Frequency \(f=\SI{50}{\hertz}\), so \(\omega=100\pi
+\approx\SI{314.159}{\radian/\second}\).
+\item Soil resistivity \(\rho=\SI{1000}{\ohm.\metre}\).
+\item Phase conductors (one per phase, no bundling): outer diameter
+\(\SI{17.1}{\milli\metre}\) (so \(r_{p}=\SI{8.55}{\milli\metre}\)),
+\(r_{\mathrm{dc}}=\SI{0.1897}{\ohm/\kilo\metre}\).
+\item Ground wire: outer diameter \(\SI{11.11}{\milli\metre}\)
+(\(r_{g}=\SI{5.555}{\milli\metre}\)),
+\(r_{\mathrm{dc}}=\SI{2.53}{\ohm/\kilo\metre}\).
+\item Geometry (order \(A,B,C,G\)):
+\(x=(-4,\,0,\,+4,\,0)\,\si{\metre}\) and
+\(y=(20,\,20,\,23,\,25)\,\si{\metre}\).
+\end{itemize}
+There is one conductor per phase, so the bundle reduction is the identity
+(\(\matT=\matI_{4}\)). Only the ground-wire elimination is non-trivial.
+
+\subsection{Geometric Distances and Image Distances}
+
+Real distances \(d_{ij}\,[\si{\metre}]\) and image distances
+\(D_{ij}\,[\si{\metre}]\):
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+pair & $A$--$B$ & $B$--$C$ & $A$--$C$ & $A$--$G$ \\
+$d_{ij}$ & $4.000$ & $5.000$ & $\sqrt{73}\!\approx\!8.544$ & $\sqrt{41}\!\approx\!6.403$ \\
+$D_{ij}$ & $\sqrt{1616}\!\approx\!40.199$ & $\sqrt{1865}\!\approx\!43.186$ & $\sqrt{1913}\!\approx\!43.738$ & $\sqrt{2041}\!\approx\!45.177$ \\
+\midrule
+pair & $B$--$G$ & $C$--$G$ & & \\
+$d_{ij}$ & $5.000$ & $\sqrt{20}\!\approx\!4.472$ & & \\
+$D_{ij}$ & $45.000$ & $\sqrt{2320}\!\approx\!48.166$ & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+The self-image distances are \(2y_{A}=2y_{B}=40\), \(2y_{C}=46\),
+\(2y_{G}=50\;\si{\metre}\).
+
+\subsection{Carson Constants}
+
+\begin{align*}
+D_{e} &= 658.5\sqrt{1000/50} \;\approx\; \SI{2944.65}{\metre},\\
+R_{e} &= \frac{\omega\mu_{0}}{8\pi}\cdot 10^{3}
+        \;\approx\; \SI{0.01571}{\ohm/\kilo\metre},\\
+\frac{\omega\mu_{0}}{2\pi}\cdot 10^{3}
+      &\approx\; \SI{0.06283}{\ohm/\kilo\metre\;per\;unit\;\ln}.
+\end{align*}
+Note that numerically the internal reactance per kilometre equals the
+earth-return resistance: \(\omega\,\Lint\cdot 10^{3}=R_{e}=\SI{0.01571}{\ohm/\kilo\metre}\).
+
+\subsection{Coupled \texorpdfstring{$4\times 4$}{4x4} Series Impedance Matrix}
+
+Apply \eqref{eq:Zii}--\eqref{eq:Zij}. For instance,
+\begin{align*}
+Z_{AA} &= (0.1897 + 0.01571) + \jj\bigl[0.01571 + 0.06283\,\ln(2944.65/0.00855)\bigr]\\
+       &= 0.2054 + \jj\,0.8167 \;[\si{\ohm/\kilo\metre}],\\[3pt]
+Z_{AB} &= 0.01571 + \jj\,0.06283\,\ln(2944.65/4) \;=\; 0.01571 + \jj\,0.4149,\\
+Z_{GG} &= (2.53 + 0.01571) + \jj\bigl[0.01571 + 0.06283\,\ln(2944.65/0.005555)\bigr]\\
+       &= 2.5457 + \jj\,0.8438.
+\end{align*}
+Repeating for every pair, the fully coupled cable-to-cable matrix
+\(\matZ_{\mathrm{full}}\), in \si{\ohm/\kilo\metre}, with rows/columns ordered
+\((A,B,C,G)\), is
+\begin{equation*}
+\matZ_{\mathrm{full}}=
+\begin{bmatrix}
+0.2054{+}\jj 0.8167 & 0.0157{+}\jj 0.4149 & 0.0157{+}\jj 0.3671 & 0.0157{+}\jj 0.3852\\
+0.0157{+}\jj 0.4149 & 0.2054{+}\jj 0.8167 & 0.0157{+}\jj 0.4008 & 0.0157{+}\jj 0.4008\\
+0.0157{+}\jj 0.3671 & 0.0157{+}\jj 0.4008 & 0.2054{+}\jj 0.8167 & 0.0157{+}\jj 0.4078\\
+0.0157{+}\jj 0.3852 & 0.0157{+}\jj 0.4008 & 0.0157{+}\jj 0.4078 & 2.5457{+}\jj 0.8438
+\end{bmatrix}.
+\end{equation*}
+
+\subsection{Kron Elimination of the Ground Wire}
+
+With \(\matT=\matI_{4}\), the bundle-reduced matrix coincides with
+\(\matZ_{\mathrm{full}}\). Partitioning the last row/column as the ground
+block and applying \eqref{eq:Kron-Z} produces the \(3\times 3\) phase-domain
+matrix
+\begin{equation*}
+\matZ_{\mathrm{ph}}=
+\begin{bmatrix}
+0.2564{+}\jj 0.7951 & 0.0688{+}\jj 0.3923 & 0.0698{+}\jj 0.3443\\
+0.0688{+}\jj 0.3923 & 0.2607{+}\jj 0.7935 & 0.0720{+}\jj 0.3771\\
+0.0698{+}\jj 0.3443 & 0.0720{+}\jj 0.3771 & 0.2627{+}\jj 0.7928
+\end{bmatrix}\;[\si{\ohm/\kilo\metre}].
+\end{equation*}
+Separating real and imaginary parts according to \eqref{eq:RLCG}:
+\begin{equation*}
+\matR=
+\begin{bmatrix}
+0.2564 & 0.0688 & 0.0698\\
+0.0688 & 0.2607 & 0.0720\\
+0.0698 & 0.0720 & 0.2627
+\end{bmatrix}\!\si{\ohm/\kilo\metre},\;\;
+\matL=
+\begin{bmatrix}
+2.531 & 1.249 & 1.096\\
+1.249 & 2.526 & 1.200\\
+1.096 & 1.200 & 2.524
+\end{bmatrix}\!\si{\milli\henry/\kilo\metre}.
+\end{equation*}
+Note that the three diagonal inductances differ by less than \SI{0.5}{\percent}
+but the three off-diagonals span \(1.10\) to \(1.25\;\si{\milli\henry/\kilo\metre}\):
+this asymmetry, induced by the non-symmetric arrangement of phase \(C\)
+relative to the \(A\)/\(B\) row, is what drives the eventual current
+unbalance.
+
+\subsection{Potential-Coefficient Matrix and Phase Capacitance}
+
+With \(1/(2\pi\varepsilon_{0})\approx 1.7975\times 10^{10}\;\si{\metre/\farad}\), \eqref{eq:Pii}--\eqref{eq:Pij} give, in units of
+\(10^{10}\;\si{\metre/\farad}\),
+\begin{equation*}
+\matP_{\mathrm{full}}=
+\begin{bmatrix}
+15.191 & 4.148 & 2.935 & 3.513\\
+4.148 & 15.191 & 3.875 & 3.950\\
+2.935 & 3.875 & 15.443 & 4.272\\
+3.513 & 3.950 & 4.272 & 16.366
+\end{bmatrix}.
+\end{equation*}
+Applying \eqref{eq:Kron-P} to eliminate the ground row/column,
+\begin{equation*}
+\matP_{\mathrm{ph}}=
+\begin{bmatrix}
+14.437 & 3.300 & 2.018\\
+3.300 & 14.238 & 2.844\\
+2.018 & 2.844 & 14.328
+\end{bmatrix}\;[10^{10}\,\si{\metre/\farad}],
+\end{equation*}
+and the phase capacitance matrix
+\(\matC=\matP_{\mathrm{ph}}^{-1}\) becomes, in \si{\nano\farad/\kilo\metre},
+\begin{equation*}
+\matC=
+\begin{bmatrix}
+7.387 & -1.567 & -0.730\\
+-1.567 & 7.646 & -1.297\\
+-0.730 & -1.297 & 7.341
+\end{bmatrix}.
+\end{equation*}
+Again the entries are visibly non-circulant.
+
+\subsection{\texorpdfstring{Per-Unit-Length \(\matZ\) and \(\matY\)}{Per-Unit-Length Z and Y}}
+
+At \(\omega=100\pi\):
+\begin{equation*}
+\matZ\;=\;\matR+\jj\omega\matL\cdot 10^{-3},\qquad
+\matY\;=\;g_{0}\matI_{3}\cdot 10^{-6}+\jj\omega\matC\cdot 10^{-9},
+\end{equation*}
+both expressed in \(\si{\ohm/\kilo\metre}\) and \(\si{\siemens/\kilo\metre}\)
+respectively. \(\matZ\) coincides with \(\matZ_{\mathrm{ph}}\) above, and
+\(\matY\) has diagonal entries \(\approx\jj\,2.32\times 10^{-6}\;\si{\siemens/\kilo\metre}\) with off-diagonals roughly half a microsiemens per kilometre.
+
+\subsection{Sending-End Solution at Selected Line Lengths}
+
+Compute \(\matM=\ee^{\matF\ell}\) numerically, take \(\matA\), \(\matB\) from
+its upper blocks, evaluate \(\alpha=\vu\cdot\overline{\matB^{-1}\vu}\) and
+\(\beta=\vu\cdot\overline{\matB^{-1}\matA\,\vu}\), and obtain \(W\) from
+\eqref{eq:W-closed-form}. The sending current \(\vI_{s}\) follows from
+\eqref{eq:Is-from-bc}. The table below collects the result for
+\(S=80+\jj 10\;\si{\mega\volt\ampere}\) at four representative lengths:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{rrrrrrrr}
+\toprule
+\(\ell\) [km] & \(|I_{A}|\) [A] & \(|I_{B}|\) [A] & \(|I_{C}|\) [A] &
+\(\Delta_{A}\) [\%] & \(\Delta_{B}\) [\%] & \(\Delta_{C}\) [\%] &
+\(V_{r}\) [kV LN]\\
+\midrule
+40   & 407.67 & 446.21 & 417.07 & \(-3.77\) & \(+5.33\) & \(-1.55\) & 59.74 \\
+80   & 407.59 & 446.31 & 417.06 & \(-3.79\) & \(+5.35\) & \(-1.56\) & 56.69 \\
+120  & 407.51 & 446.41 & 417.05 & \(-3.81\) & \(+5.37\) & \(-1.56\) & 54.49 \\
+200  & 407.39 & 446.58 & 417.02 & \(-3.84\) & \(+5.41\) & \(-1.57\) & 53.04 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The mean sending current magnitude is
+\(\overline{|I|}=\bigl(P^{2}+Q^{2}\bigr)^{1/2}\!/(\sqrt{3}\,V_{LL})\approx
+\SI{423.3}{\ampere}\), in good agreement with the row averages above.
+
+\subsection{Interpretation}
+
+\begin{itemize}
+\item Phase \(B\) carries roughly \SI{5}{\percent} more current than the
+three-phase mean, while phase \(A\) carries \SI{3.8}{\percent} less and
+phase \(C\) about \SI{1.6}{\percent} less. The middle phase being the most
+loaded is a direct consequence of the geometry: phase \(B\) sits at the
+lowest height, equidistant from \(A\) and \(C\), and therefore carries the
+largest share of the imbalanced charging current dictated by the non-circulant
+\(\matC\) and \(\matL\) matrices computed above.
+\item The percentage deviations are remarkably stable over the range
+\(40\text{--}\SI{200}{\kilo\metre}\): the structural asymmetry of \(\matZ\)
+and \(\matY\) sets the unbalance pattern, not the line length. Length affects
+mainly the absolute magnitudes (slight bias because the capacitive charging
+current adds to the loading current) and the receiving-end voltage and angle.
+\item The receiving-end voltage drops monotonically with \(\ell\), from
+\SI{59.7}{\kilo\volt} at \SI{40}{\kilo\metre} (a \SI{5.9}{\percent} drop
+relative to \(V_{s}=\SI{63.5}{\kilo\volt}\)) down to \SI{53.0}{\kilo\volt} at
+\SI{200}{\kilo\metre} (\SI{16.5}{\percent} drop), reflecting both active
+losses across \(\matR\) and reactive drop across \(\matL\).
+\item Sweeping \(S\) at fixed \(\ell\) reveals the second axis of the
+\(\Delta_{\mathrm{mag},k}(\ell,S)\) surface: as \(|S|\) decreases the
+capacitive term \(V_{s}^{2}\beta\) in \eqref{eq:W-closed-form} dominates over
+the loading term \(S\), and the percentage unbalance grows in magnitude
+because the fixed shunt-induced charging current becomes a larger fraction
+of \(|\vI_{s}|\).
+\end{itemize}
+
+The full surface
+\(\Delta_{\mathrm{mag},k}(\ell,S)\) and the spatial-variation indicator
+\(\eta_{k}(\ell,S)\) of \eqref{eq:eta} are produced by the Litgrid
+application by repeating the procedure above on a parameter grid.
+
+\end{document}

@@ -1,0 +1,62 @@
+% ──────────────────────────────────────────────────────────────────────────────
+%  Section 1 — Setup
+% ──────────────────────────────────────────────────────────────────────────────
+
+\section{Setup and line-only constants}
+\label{sec:setup}
+
+The line is modelled in the distributed-parameter form developed in the
+parent technical document. The local terminal voltage is held balanced
+and positive sequence at the nominal line-to-neutral magnitude
+$V_{s} = V_{LL}/\sqrt{3}$, with phase ordering
+$\vu = (1,\,a^{2},\,a)^{\top}$ and $a = \ee^{\jj 2\pi/3}$. The
+sending-end three-phase complex power and the line length are the two
+free parameters of the present analysis,
+$S = P + \jj Q \in \mathbb{C}$ and
+$\ell \in \mathbb{R}_{+}$.
+
+The line geometry enters the equations only through the matrix
+exponential of the state-space generator,
+$\matM(\ell) = \ee^{\matF \ell}$, with
+$\matF = [\,\bm{0},\,-\matZ;\,-\matY,\,\bm{0}\,]$ assembled from the
+per-unit-length series impedance and shunt admittance matrices. The
+upper blocks of $\matM(\ell)$ are the ABCD operators $\matA(\ell)$ and
+$\matB(\ell)$, both of which are independent of $S$ and $V_{s}$. From
+these blocks four \emph{line-only} quantities are formed, all of which
+will be repeatedly invoked below:
+%
+\begin{equation}
+\label{eq:line-constants}
+\vp(\ell) \;=\; \matB(\ell)^{-1}\,\vu,
+\qquad
+\vq(\ell) \;=\; \matB(\ell)^{-1}\matA(\ell)\,\vu,
+\end{equation}
+%
+\begin{equation}
+\label{eq:alpha-beta}
+\alpha(\ell) \;=\; \vu \cdot \overline{\vp(\ell)},
+\qquad
+\beta(\ell)  \;=\; \vu \cdot \overline{\vq(\ell)},
+\end{equation}
+%
+\noindent where the dot product is the ordinary, non-Hermitian component
+sum and the overline denotes complex conjugation. The vectors
+$\vp,\vq \in \mathbb{C}^{3}$ carry the phase index $k \in \{A,B,C\}$
+through their components $p_{k}$ and $q_{k}$; the scalars
+$\alpha,\beta \in \mathbb{C}$ do not. Every quantity in
+\eqref{eq:line-constants}--\eqref{eq:alpha-beta} depends on $\ell$ only
+and is computed once for a given tower geometry by exponentiating
+$\matF$ at the requested length.
+
+The two-point boundary problem solved in the parent document delivers
+the receiving-end complex unknown
+\begin{equation}
+\label{eq:W-recall}
+W(\ell, S)
+\;=\;
+\frac{S \;+\; V_{s}^{2}\,\beta(\ell)}{V_{s}\,\alpha(\ell)},
+\end{equation}
+\noindent and the sending-end phase currents follow from
+$\vI_{s} = \matB^{-1}\!\bigl(W^{*}\vu - V_{s}\,\matA\vu\bigr)$. Both
+relations are recalled here only to fix notation; the rest of the
+present note works directly in $(S,\ell)$.

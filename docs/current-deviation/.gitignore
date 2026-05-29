@@ -1,0 +1,27 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.dvi
+
+# Generated PDFs
+*.pdf
+
+# Build-generated (not versioned)
+_version.tex
+
+# Symlink to the plugin library
+shared
+
+# Editors
+.DS_Store
+*.swp
+*~

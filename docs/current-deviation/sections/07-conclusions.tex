@@ -1,0 +1,31 @@
+% ──────────────────────────────────────────────────────────────────────────────
+%  Section 7 — Conclusion
+% ──────────────────────────────────────────────────────────────────────────────
+
+\section{Conclusion}
+\label{sec:conclusions}
+
+The closed-form expression for the peak-to-peak modular spread
+$\Delta_{\max}(S,\ell)$ delivers a single operational reading: the
+actual electrical state of a terminal cannot be determined from the
+phase current alone, whether read as a single-phase modulus or as the
+full three-phase set. The reason is structural. The line is
+geometrically not circulant, and under balanced positive-sequence
+voltage at both terminals the natural asymmetry of the per-unit-length
+matrices has no degree of freedom left in the voltage state; it is
+forced into the current and into the per-phase split of $P$ and $Q$.
+The current is therefore unbalanced by construction, set by the tower
+geometry rather than by a fault or an asymmetric excitation. At the
+anchor of \autoref{sec:example} this materialises as a
+$\SI{9.08}{\percent}$ peak-to-peak spread and a
+$\SI{6.13}{\percent}$ negative-sequence ratio, both produced entirely
+by geometry.
+
+In any actual deployment the voltages at the two ends are not
+perfectly balanced either, so the asymmetry redistributes across all
+four signals -- voltage, current, active and reactive power per phase
+-- in proportions that depend on the loading direction and on the
+stiffness of each bus. A current-only reading, even on all three
+phases, cannot recover that distribution. The actual state of the
+terminal is the four-signal package $(V,I,P,Q)$ per phase, with phase
+angles, measured at both ends.
